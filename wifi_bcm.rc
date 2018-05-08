@@ -1,0 +1,4 @@
+
+on boot
+    write /sys/module/bcmdhd/parameters/firmware_path /vendor/firmware/fw_bcm4356a2_pcie_ag.bin
+    write /sys/module/bcmdhd/parameters/nvram_path /vendor/firmware/nvram.txt

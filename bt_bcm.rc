@@ -1,0 +1,4 @@
+
+on boot
+    chmod 777 /dev/AMA2
+    chmod 777 /sys/class/rfkill/rfkill0/state

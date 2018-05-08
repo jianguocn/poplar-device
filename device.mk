@@ -62,6 +62,7 @@ PRODUCT_COPY_FILES += \
 
 
 # start HAL bt >>>>>>>>
+BOARD_BT_VENDOR := mediatek
 ## feature declaration
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
@@ -72,7 +73,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.bluetooth@1.0-service \
     android.hardware.bluetooth@1.0-service.rc \
-    android.hardware.bluetooth@1.0-impl \
+    android.hardware.bluetooth@1.0-impl
+ifeq ($(BOARD_BT_VENDOR), mediatek)
 ## copy packages
 PRODUCT_COPY_FILES += \
     vendor/hisilicon/poplar/proprietary/audio.a2dp.default.so:$(TARGET_COPY_OUT_VENDOR)/lib/audio.a2dp.default.so \
@@ -86,9 +88,21 @@ PRODUCT_COPY_FILES += \
     device/hisilicon/poplar-kernel/modules/btmtk_usb.ko:$(TARGET_COPY_OUT_VENDOR)/lib/modules/btmtk_usb.ko \
 ## service init.rc scripts
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/bt_mtk.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/bt_mtk.rc \
-
-
+    $(LOCAL_PATH)/bt_mtk.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/bt.rc
+else ifeq ($(BOARD_BT_VENDOR), broadcom)
+## build packages
+PRODUCT_PACKAGES += \
+    libbt-vendor
+## config files
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/bt_bcm.conf:system/etc/bluetooth/bt_vendor.conf
+## service init.rc scripts
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/bt_bcm.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/bt.rc
+## firmwares
+PRODUCT_COPY_FILES += \
+    vendor/hisilicon/poplar/proprietary/firmware/BCM4356A2.hcd:$(TARGET_COPY_OUT_VENDOR)/firmware/BCM4356A2.hcd
+endif
 
 # start HAL drm >>>>>>>>
 
@@ -168,12 +182,13 @@ PRODUCT_COPY_FILES += \
 
 
 # start HAL wifi >>>>>>>>
+BOARD_WIFI_VENDOR := mediatek
 ## feature declaration
 PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
-
+    frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml
 
 ## build packages
+ifeq ($(BOARD_WIFI_VENDOR), mediatek)
 PRODUCT_PACKAGES += \
     android.hardware.wifi@1.0-service \
     android.hardware.wifi.supplicant@1.0 \
@@ -200,7 +215,24 @@ PRODUCT_COPY_FILES += \
     vendor/hisilicon/poplar/proprietary/firmware/wifi.cfg:$(TARGET_COPY_OUT_VENDOR)/firmware/wifi.cfg \
 ## drivers
 PRODUCT_COPY_FILES += \
-    device/hisilicon/poplar-kernel/modules/wlan_mt7668_usb.ko:$(TARGET_COPY_OUT_VENDOR)/lib/modules/wlan_mt7668_usb.ko \
+    device/hisilicon/poplar-kernel/modules/wlan_mt7668_usb.ko:$(TARGET_COPY_OUT_VENDOR)/lib/modules/wlan_mt7668_usb.ko
+else ifeq ($(BOARD_WIFI_VENDOR), broadcom)
+PRODUCT_PACKAGES += \
+    android.hardware.wifi@1.0-service \
+    wificond \
+    wificond.rc \
+    libwpa_client \
+    libwifi-hal \
+    wpa_supplicant \
+    hostapd
+## firmwares
+PRODUCT_COPY_FILES += \
+    vendor/hisilicon/poplar/proprietary/firmware/fw_bcm4356a2_pcie_ag.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/fw_bcm4356a2_pcie_ag.bin \
+    vendor/hisilicon/poplar/proprietary/firmware/nvram.txt:$(TARGET_COPY_OUT_VENDOR)/firmware/nvram.txt
+## service init.rc scripts
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/wifi_bcm.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/wifi_bcm.rc
+endif
 ## service init.rc scripts
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/wifi.rc \
